@@ -101,7 +101,7 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, lineArr }) => {
                 // swap to make line bottom to top
                 if (p0.y > p1.y) [p0.y, p1.y] = [p1.y, p0.y];
 
-                // obtain and draw x values at each y
+                // obtain and draw x values for each y
                 const xs: number[] = interpolate(p0.y, p0.x, p1.y, p1.x);
                 for (let y = p0.y; y <= p1.y; y++) {
                     putPixel(xs[y - p0.y | 0], y, color);
@@ -118,44 +118,81 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, lineArr }) => {
 
         const drawFilledTriangle = (p0: Pixel, p1: Pixel, p2: Pixel, color: number[]): void => {
 
+            // swap points from lowest to highest
             if (p1.y < p0.y) [p1, p0] = [p0, p1];
             if (p2.y < p0.y) [p2, p0] = [p0, p2];
             if (p2.y < p1.y) [p2, p1] = [p1, p2];
 
+            // 
+            //
             let x01: number[] = interpolate(p0.y, p0.x, p1.y, p1.x);
-            let x12: number[] = interpolate(p1.y, p1.x, p2.y, p2.x);
-            let x02: number[] = interpolate(p0.y, p0.x, p2.y, p2.x);
+            let h01: number[] = interpolate(p0.y, p0.h, p1.y, p1.h);
 
-            x01.pop(); // b/c last x01 = first x12
+            let x12: number[] = interpolate(p1.y, p1.x, p2.y, p2.x);
+            let h12: number[] = interpolate(p1.y, p1.h, p2.y, p2.h);
+
+            let x02: number[] = interpolate(p0.y, p0.x, p2.y, p2.x);
+            let h02: number[] = interpolate(p0.y, p0.h, p2.y, p2.h);
+
+            // connect two short sides
+            x01.pop();
+            h01.pop();
+
             let x012: number[] = x01.concat(x12);
+            let h012: number[] = h01.concat(h12);
 
             let m: number = Math.floor(x012.length / 2);
 
             let x_left: number[];
+            let h_left: number[];
+
             let x_right: number[];
+            let h_right: number[];
 
             if (x02[m] < x012[m]) {
                 x_left = x02;
+                h_left = h02;
+                
                 x_right = x012;
+                h_right = h012;
             } else {
                 x_left = x012;
+                h_left = h012;
+
                 x_right = x02;
+                h_right = h02;
             }
 
-            for (let y = p0.y; y < p2.y; y++) {
-                for (let x = x_left[y - p0.y]; x < x_right[y - p0.y]; x++) {
-                    putPixel(x, y, color);
+            // iterate from bottom to top
+            for (let yi = p0.y; yi < p2.y; yi++) {
+
+                // obtain the left and right x-values of the line
+                let x_l: number = x_left[yi - p0.y];
+                let h_l: number = h_left[yi - p0.y];
+
+                let x_r: number = x_right[yi - p0.y];
+                let h_r: number = h_right[yi - p0.y];
+                
+                // obtain hue values at each x on the line at yi
+                let h_segment: number[] = interpolate(x_l, h_l, x_r, h_r);
+
+                // iterate from left to right
+                for (let xi = x_left[yi - p0.y]; xi < x_right[yi - p0.y]; xi++) {
+                    let shadedColor: number[] = [
+                        color[0] * h_segment[xi - x_l],
+                        color[1] * h_segment[xi - x_l],
+                        color[2] * h_segment[xi - x_l]
+                    ]
+                    putPixel(xi, yi, shadedColor);
                 }
+
             }
         }
 
-        // for (let i = 0; i < lineArr.length; i++) {
-        //     drawLine(lineArr[i].p0, lineArr[i].p1, [0, 0, 0]);
-        // }
-
-        let p0 = new Pixel(-200, -200);
-        let p1 = new Pixel(200, 50);
-        let p2 = new Pixel(20, 250);
+        // test green triangle
+        let p0 = new Pixel(-200, -200, 0);
+        let p1 = new Pixel(200, 50, 0.5);
+        let p2 = new Pixel(20, 250, 1.0);
 
         drawFilledTriangle(p0, p1, p2, [0, 255, 0]);
         drawWireframeTriangle(p0, p1, p2, [0, 0, 0]);
