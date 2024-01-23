@@ -1,4 +1,4 @@
-import { Pixel }from "./Pixel.tsx";
+import { Pixel } from "./Pixel.tsx";
 
 export class Line {
 
@@ -24,6 +24,27 @@ export class Line {
 
     set p1(newP1: Pixel) {
         this._p1 = newP1;
+    }
+
+    updatePoint(point: number, axis: string, value: number): Line {
+        let newP0: Pixel = new Pixel(this._p0.x, this._p0.y);
+        let newP1: Pixel = new Pixel(this._p1.x, this._p1.y);    
+
+        if (point === 0) {
+            if (axis === 'x') {
+                newP0 = new Pixel(value, this._p0.y);
+            } else if (axis === 'y') {
+                newP0 = new Pixel(this._p0.x, value);
+            }
+        } else if (point === 1) {
+            if (axis === 'x') {
+                newP1 = new Pixel(value, this._p1.y);
+            } else if (axis === 'y') {
+                newP1 = new Pixel(this._p1.x, value);
+            }
+        }
+        
+        return new Line(newP0, newP1);
     }
 }
 

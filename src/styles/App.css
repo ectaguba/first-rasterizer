@@ -12,7 +12,7 @@ code {
     monospace;
 }
 
-.LineField {
+.line-field-div, .LineField {
   display: flex;
   flex-direction: row;
   justify-content: center;
