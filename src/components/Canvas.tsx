@@ -36,7 +36,7 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, lineArr }) => {
             - canvasBuffer.data[i + 3] corresponds to Alpha */
         const canvasBuffer: ImageData = context.getImageData(0, 0, canvas.width, canvas.height);
         const canvasPitch: number = canvasBuffer.width * 4;
-        
+
         // main drawing method
         const putPixel = (x: number, y: number, color: number[]): void => {
 
@@ -80,36 +80,44 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, lineArr }) => {
             return values;
         };
 
-        // drawing lines
         const drawLine = (p0: Pixel, p1: Pixel, color: number[]): void => {
-
             const dx: number = p1.x - p0.x;
             const dy: number = p1.y - p0.y;
 
-            if (Math.abs(dx) > Math.abs(dy)) { 
-                // horizontal-ish line
-                // swap to make line left to right
-                if (p0.x > p1.x) [p0.x, p1.x] = [p1.x, p0.x];
+            if (Math.abs(dx) > Math.abs(dy)) {
+                // The line below is BUGGED: pass-by-reference switches objects outside the function
+                // if (p0.x > p1.x) [p0.x, p1.x] = [p1.x, p0.x];
+
+                // horizontal-ish line, swap to make line left to right
+                const startPixel = p0.x > p1.x ? p1 : p0;
+                const endPixel = p0.x > p1.x ? p0 : p1;
 
                 // obtain and draw y values at each x
-                const ys: number[] = interpolate(p0.x, p0.y, p1.x, p1.y);
-                for (let x = p0.x; x <= p1.x; x++) {
-                    putPixel(x, ys[x - p0.x | 0], color);
+                const ys: number[] = interpolate(startPixel.x, startPixel.y, endPixel.x, endPixel.y);
+
+                for (let x = startPixel.x; x <= endPixel.x; x++) {
+                    const interpolatedY = ys[x - startPixel.x | 0];
+                    putPixel(x, interpolatedY, color);
                 }
-            } else { 
-                // vertical-ish line
-                // swap to make line bottom to top
-                if (p0.y > p1.y) [p0.y, p1.y] = [p1.y, p0.y];
+            } else {
+                // BUGGED: pass-by-reference switches objects outside the function
+                // if (p0.y > p1.y) [p0.y, p1.y] = [p1.y, p0.y];
+                
+                // vertical-ish line, swap to make line bottom to top
+                const startPixel = p0.y > p1.y ? p1 : p0;
+                const endPixel = p0.y > p1.y ? p0 : p1;
 
                 // obtain and draw x values for each y
-                const xs: number[] = interpolate(p0.y, p0.x, p1.y, p1.x);
-                for (let y = p0.y; y <= p1.y; y++) {
-                    putPixel(xs[y - p0.y | 0], y, color);
+                const xs: number[] = interpolate(startPixel.y, startPixel.x, endPixel.y, endPixel.x);
+
+                for (let y = startPixel.y; y <= endPixel.y; y++) {
+                    const interpolatedX = xs[y - startPixel.y | 0];
+                    putPixel(interpolatedX, y, color);
                 }
             }
         };
 
-        //
+
         const drawWireframeTriangle = (p0: Pixel, p1: Pixel, p2: Pixel, color: number[]): void => {
             drawLine(p0, p1, color);
             drawLine(p1, p2, color);
@@ -123,8 +131,7 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, lineArr }) => {
             if (p2.y < p0.y) [p2, p0] = [p0, p2];
             if (p2.y < p1.y) [p2, p1] = [p1, p2];
 
-            // 
-            //
+            // for each y, obtain x and h values
             let x01: number[] = interpolate(p0.y, p0.x, p1.y, p1.x);
             let h01: number[] = interpolate(p0.y, p0.h, p1.y, p1.h);
 
@@ -141,6 +148,7 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, lineArr }) => {
             let x012: number[] = x01.concat(x12);
             let h012: number[] = h01.concat(h12);
 
+            // use the middle of the triangle to determine left and right sides
             let m: number = Math.floor(x012.length / 2);
 
             let x_left: number[];
@@ -152,7 +160,7 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, lineArr }) => {
             if (x02[m] < x012[m]) {
                 x_left = x02;
                 h_left = h02;
-                
+
                 x_right = x012;
                 h_right = h012;
             } else {
@@ -172,7 +180,7 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, lineArr }) => {
 
                 let x_r: number = x_right[yi - p0.y];
                 let h_r: number = h_right[yi - p0.y];
-                
+
                 // obtain hue values at each x on the line at yi
                 let h_segment: number[] = interpolate(x_l, h_l, x_r, h_r);
 
@@ -185,8 +193,11 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, lineArr }) => {
                     ]
                     putPixel(xi, yi, shadedColor);
                 }
-
             }
+        }
+
+        for (let i = 0; i < lineArr.length; i++) {
+            drawLine(lineArr[i].p0, lineArr[i].p1, [0,0,0]);
         }
 
         // test green triangle
@@ -194,10 +205,11 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, lineArr }) => {
         let p1 = new Pixel(200, 50, 0.5);
         let p2 = new Pixel(20, 250, 1.0);
 
-        drawFilledTriangle(p0, p1, p2, [0, 255, 0]);
+        drawFilledTriangle(p0, p1, p2, [255, 0, 255]);
         drawWireframeTriangle(p0, p1, p2, [0, 0, 0]);
 
         updateCanvas();
+
     }, [lineArr]);
 
     return (
