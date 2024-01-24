@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/first-rasterizer/static/css/main.bb915917.css",
+    "main.js": "/first-rasterizer/static/js/main.ecfd9edf.js",
+    "index.html": "/first-rasterizer/index.html",
+    "main.bb915917.css.map": "/first-rasterizer/static/css/main.bb915917.css.map",
+    "main.ecfd9edf.js.map": "/first-rasterizer/static/js/main.ecfd9edf.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.bb915917.css",
+    "static/js/main.ecfd9edf.js"
+  ]
+}
