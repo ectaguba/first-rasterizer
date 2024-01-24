@@ -26,24 +26,67 @@ export class Line {
         this._p1 = newP1;
     }
 
-    updatePoint(point: number, axis: string, value: number): Line {
-        let newP0: Pixel = new Pixel(this._p0.x, this._p0.y);
-        let newP1: Pixel = new Pixel(this._p1.x, this._p1.y);    
+    private _hexToRGB = (hex: string): number[] =>  {
+        // Remove the hash if it's present
+        hex = hex.replace(/^#/, '');
+    
+        // Ensure the hex code is valid
+        const validHex = /^[0-9A-F]{6}$/i.test(hex);
+        if (!validHex) {
+            console.error('Invalid hex color code');
+            return [0, 0, 0];
+        }
+    
+        // Parse the hex code into RGB values
+        const bigint = parseInt(hex, 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+    
+        return [r, g, b];
+    }
 
-        if (point === 0) {
-            if (axis === 'x') {
-                newP0 = new Pixel(value, this._p0.y);
-            } else if (axis === 'y') {
-                newP0 = new Pixel(this._p0.x, value);
+    updatePoint(
+        point: number, 
+        property: 'x' | 'y' | 'h' | 'color', 
+        value: string | number
+    ): Line {
+        let newP0: Pixel = new Pixel(this._p0.x, this._p0.y, this._p0.color, this._p0.h);
+        let newP1: Pixel = new Pixel(this._p1.x, this._p1.y, this._p1.color, this._p1.h);
+
+        // NOTE: Compile-time assertion (value as number) doesn't work,
+        //       so you need runtime conversion (Number(value))
+        if (property === 'x') {
+            if (point === 0) {
+                newP0 = new Pixel(Number(value), this._p0.y, this._p0.color, this._p0.h);
+            } else if (point === 1) {
+                newP1 = new Pixel(Number(value), this._p1.y, this._p1.color,  this._p1.h);
             }
-        } else if (point === 1) {
-            if (axis === 'x') {
-                newP1 = new Pixel(value, this._p1.y);
-            } else if (axis === 'y') {
-                newP1 = new Pixel(this._p1.x, value);
+        } else if (property === 'y') {
+            if (point === 0) {
+                newP0 = new Pixel(this._p0.x, Number(value), this._p0.color, this._p0.h);
+            } else if (point === 1) {
+                newP1 = new Pixel(this._p1.x, Number(value), this._p1.color, this._p1.h);
+            }
+        } else if (property === 'color') {
+            let newColor: number[] = this._hexToRGB(value as string);
+            if (point === 0) {
+                newP0 = new Pixel(this._p0.x, this._p0.y, newColor, this._p0.h);
+            } else if (point === 1) {
+                newP1 = new Pixel(this._p1.x, this._p1.y, newColor, this._p1.h);
+            }
+        } else if (property === 'h') {
+            if (point === 0) {
+                newP0 = new Pixel(this._p0.x, this._p0.y, this._p0.color, Number(value));
+            } else if (point === 1) {
+                newP1 = new Pixel(this._p1.x, this._p1.y, this._p1.color, Number(value));
             }
         }
-        
+
+        // // Update the private properties with the new values
+        // this._p0 = newP0;
+        // this._p1 = newP1;
+
         return new Line(newP0, newP1);
     }
 }
