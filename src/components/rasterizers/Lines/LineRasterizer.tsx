@@ -63,7 +63,7 @@ const LineRasterizer: React.FC = () => {
         <div className="LineRasterizer">
             <div className="CanvasContainer">
                 <Canvas
-                    lineArr={lineArr}
+                    modelArr={lineArr}
                     width={canvasSize.x}
                     height={canvasSize.y}
                 />
