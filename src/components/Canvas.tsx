@@ -39,7 +39,6 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, lineArr }) => {
 
         // main drawing method
         const putPixel = (x: number, y: number, color: number[]): void => {
-
             x = canvas.width / 2 + (x | 0);
             y = canvas.height / 2 - (y | 0) - 1;
 
@@ -55,7 +54,6 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, lineArr }) => {
             canvasBuffer.data[offset++] = color[1];
             canvasBuffer.data[offset++] = color[2];
             canvasBuffer.data[offset++] = 255; // Alpha
-
         };
 
         // switch front buffer and back buffer
@@ -102,7 +100,7 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, lineArr }) => {
             } else {
                 // BUGGED: pass-by-reference switches objects outside the function
                 // if (p0.y > p1.y) [p0.y, p1.y] = [p1.y, p0.y];
-                
+
                 // vertical-ish line, swap to make line bottom to top
                 const startPixel = p0.y > p1.y ? p1 : p0;
                 const endPixel = p0.y > p1.y ? p0 : p1;
@@ -116,7 +114,6 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, lineArr }) => {
                 }
             }
         };
-
 
         const drawWireframeTriangle = (p0: Pixel, p1: Pixel, p2: Pixel, color: number[]): void => {
             drawLine(p0, p1, color);
@@ -199,14 +196,6 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, lineArr }) => {
         for (let i = 0; i < lineArr.length; i++) {
             drawLine(lineArr[i].p0, lineArr[i].p1, [0,0,0]);
         }
-
-        // test green triangle
-        let p0 = new Pixel(-200, -200, 0);
-        let p1 = new Pixel(200, 50, 0.5);
-        let p2 = new Pixel(20, 250, 1.0);
-
-        drawFilledTriangle(p0, p1, p2, [255, 0, 255]);
-        drawWireframeTriangle(p0, p1, p2, [0, 0, 0]);
 
         updateCanvas();
 

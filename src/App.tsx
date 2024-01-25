@@ -10,19 +10,32 @@ const App: React.FC = () => {
 
     const canvasSize = { x: 640, y: 480 };
 
-    const [lineArr, setLineArr] = useState<Line[]>(
-        [new Line(
-            new Pixel(0, 0),
-            new Pixel(0, 0)
-        )]
-    );
+    const [lineArr, setLineArr] = useState<Line[]>([
+        new Line(
+            new Pixel(0, 120), 
+            new Pixel(-160, -120)
+        ),
+        new Line(
+            new Pixel(-160, -120), 
+            new Pixel(160, -120)
+        ),
+        new Line(
+            new Pixel(160, -    120), 
+            new Pixel(0, 120)
+        )
+    ]);
 
-    const handleChangeLine = (index: number, point: number, axis: string, value: number): void => {
+    const handleChangeLine = (
+        index: number, 
+        point: number, 
+        property: 'x' | 'y' | 'h' | 'color', 
+        value: string | number
+    ): void => {
+        // return new array to re-render
         setLineArr((prevLineArr) => {
             const updatedLines = prevLineArr.map((line, i) => {
-                // i === index ? line.updatePoint(point, axis, value) : line
                 if (i === index) {
-                    return line.updatePoint(point, axis, value);
+                    return line.updatePoint(point, property, value);
                 } else {
                     return line;
                 }
@@ -38,35 +51,39 @@ const App: React.FC = () => {
         setLineArr((prevLineArr) => [...prevLineArr, newLine]);
     }
 
-    const printLines = (): void => {
-        console.log("printLines:")
-        lineArr.map((item, index) => {
-            console.log(`${index}: (${item.p0.x}, ${item.p0.y}), (${item.p1.x}, ${item.p1.y})`)
-        })
+    for (let i = 0; i < lineArr.length; i ++) {
+        console.log(`lineArr Line ${i}`);
+        console.log(`(x0: ${lineArr[i].p0.x}, y0: ${lineArr[i].p0.y}, color0: [${lineArr[i].p0.color}], h0: ${lineArr[i].p0.h})`);
+        console.log(`(x1: ${lineArr[i].p1.x}, y1: ${lineArr[i].p1.y}, color1: [${lineArr[i].p1.color}], h1: ${lineArr[i].p0.h})`);
+        console.log("");
     }
 
     return (
-        <div>
-            <h1 style={{ textAlign: "center" }}>Rasterizer in the Web</h1>
-            <Canvas
-                lineArr={lineArr}
-                width={canvasSize.x}
-                height={canvasSize.y}
-            />
-            {lineArr.map((item: Line, index: number) => (
-                <div className="line-field-div" key={index}>
+        <div className="App">
+            <div className="CanvasContainer">
+                <Canvas
+                    lineArr={lineArr}
+                    width={canvasSize.x}
+                    height={canvasSize.y}
+                />
+            </div>
+            <div className="LineFieldContainer">
+                {lineArr.map((item: Line, index: number) => (
                     <LineField
+                        key={index}
                         lineIndex={index}
                         line={item}
                         handleChangeLine={handleChangeLine}
                     />
-                </div>
-            ))}
-            <button type="button" onClick={handleAddLine}>
-                Add Line
-            </button>
-            <button onClick={printLines}>Print Lines</button>
-            {/* <LineTest /> */}
+                ))}
+                <button 
+                    className="AddLineBtn"
+                    type="button" 
+                    onClick={handleAddLine}
+                >
+                    Add Line
+                </button>
+            </div>
         </div>
     );
 };
