@@ -1,5 +1,5 @@
-import { Pixel } from "./Pixel.tsx"
-import { Line } from "./Line.tsx"
+import { Pixel } from "../Pixel.tsx"
+import { Line } from "../Line.tsx"
 import React, { useState } from "react";
 
 const LineTest = () => {
@@ -19,12 +19,17 @@ const LineTest = () => {
         ),
     ]);
     
-    const handleChangeLine = (index: number, point: number, axis: string, value: number): void => {
+    const handleChangeLine = (
+        index: number, 
+        point: number, 
+        property: 'x' | 'y' | 'color' | 'h', 
+        value: number
+    ): void => {
         setLineArr((prevLineArr) => {
             const updatedLines = prevLineArr.map((line, i) => {
                 // i === index ? line.updatePoint(point, axis, value) : line
                 if (i === index) {
-                    return line.updatePoint(point, axis, value);
+                    return line.updatePoint(point, property, value);
                 } else {
                     return line;
                 }
@@ -33,8 +38,11 @@ const LineTest = () => {
         });
     };
     
-    const handleCoordinateChange = (point: number, axis: string, value: number): void => {
-        handleChangeLine(2, point, axis, value);
+    const handleCoordinateChange = (
+        point: number, 
+        property: 'x' | 'y' | 'color' | 'h', value: number
+    ): void => {
+        handleChangeLine(2, point, property, value);
     };
     
     console.log(lineArr);

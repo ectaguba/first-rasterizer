@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Line } from './Line.tsx';
+import { Line } from '../Line.tsx';
 
 interface LineFieldProps {
     lineIndex: number;
