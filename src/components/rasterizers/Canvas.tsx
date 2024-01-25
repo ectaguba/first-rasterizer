@@ -2,14 +2,18 @@ import React, { useEffect, useRef } from 'react';
 
 import { Pixel } from "./Pixel.tsx"
 import { Line } from "./Line.tsx"
+import { Triangle } from "./Triangle.tsx"
+
+// Union type for different shapes
+type Model = Line | Triangle;
 
 interface CanvasProps {
     width: number;
     height: number;
-    lineArr: Line[];
+    modelArr: Model[];
 }
 
-const Canvas: React.FC<CanvasProps> = ({ width, height, lineArr }) => {
+const Canvas: React.FC<CanvasProps> = ({ width, height, modelArr }) => {
 
     // obtain React reference to canvas node
     const canvasRef: React.RefObject<HTMLCanvasElement> = useRef<HTMLCanvasElement>(null);
@@ -193,13 +197,19 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, lineArr }) => {
             }
         }
 
-        for (let i = 0; i < lineArr.length; i++) {
-            drawLine(lineArr[i].p0, lineArr[i].p1, [0,0,0]);
+        for (let i = 0; i < modelArr.length; i++) {
+            const shape = modelArr[i];
+            if (shape instanceof Line) {
+                drawLine(shape.p0, shape.p1, [0, 0, 0]);
+            } else if (shape instanceof Triangle) {
+                drawWireframeTriangle(shape.p0, shape.p1, shape.p2, [0, 0, 0]);
+                drawFilledTriangle(shape.p0, shape.p1, shape.p2, [0, 255, 0]);
+            }
         }
 
         updateCanvas();
 
-    }, [lineArr]);
+    }, [modelArr]);
 
     return (
         <div className="centered">
