@@ -32,17 +32,13 @@ const LineRasterizer: React.FC = () => {
         property: 'x' | 'y' | 'h' | 'color', 
         value: string | number
     ): void => {
-        // return new array to re-render
-        setLineArr((prevLineArr) => {
-            const updatedLines = prevLineArr.map((line, i) => {
-                if (i === index) {
-                    return line.updatePoint(point, property, value);
-                } else {
-                    return line;
-                }
-            });
-            return updatedLines;
+        const updatedLines: Line[] = [...lineArr];
+        updatedLines.map((line, i) => {
+            if (i === index) {
+                line.updatePoint(point, property, value);
+            }
         });
+        setLineArr(updatedLines);
     };
 
     const handleAddLine = (): void => {

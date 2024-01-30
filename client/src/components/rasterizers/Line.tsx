@@ -59,44 +59,28 @@ export class Line {
         point: number, 
         property: 'x' | 'y' | 'h' | 'color', 
         value: string | number
-    ): Line {
-        let newP0: Pixel = new Pixel(this._p0.x, this._p0.y, this._p0.h, this._p0.color);
-        let newP1: Pixel = new Pixel(this._p1.x, this._p1.y, this._p1.h, this._p1.color);
-
-        // NOTE: Compile-time assertion (value as number) doesn't work,
-        //       so you need runtime conversion (Number(value))
+    ): void {
         if (property === 'x') {
             if (point === 0) {
-                newP0 = new Pixel(Number(value), this._p0.y, this._p0.h, this._p0.color);
-            } else if (point === 1) {
-                newP1 = new Pixel(Number(value), this._p1.y,  this._p1.h,  this._p1.color);
+                this._p0.x = Number(value);
+            } else {
+                this._p1.x = Number(value);
             }
         } else if (property === 'y') {
             if (point === 0) {
-                newP0 = new Pixel(this._p0.x, Number(value), this._p0.h, this._p0.color);
-            } else if (point === 1) {
-                newP1 = new Pixel(this._p1.x, Number(value), this._p1.h, this._p1.color);
+                this._p0.y = Number(value);
+            } else {
+                this._p1.y = Number(value);
             }
         } else if (property === 'color') {
-            let newColor: number[] = this._hexToRGB(value as string);
-            if (point === 0) {
-                newP0 = new Pixel(this._p0.x, this._p0.y, this._p0.h, newColor);
-            } else if (point === 1) {
-                newP1 = new Pixel(this._p1.x, this._p1.y, this._p1.h, newColor);
-            }
+            this._color = this._hexToRGB(value as string);
         } else if (property === 'h') {
             if (point === 0) {
-                newP0 = new Pixel(this._p0.x, this._p0.y, Number(value), this._p0.color);
-            } else if (point === 1) {
-                newP1 = new Pixel(this._p1.x, this._p1.y, Number(value), this._p1.color);
+                this._p0.h = Number(value);
+            } else {
+                this._p1.h = Number(value);
             }
         }
-
-        // // Update the private properties with the new values
-        // this._p0 = newP0;
-        // this._p1 = newP1;
-
-        return new Line(newP0, newP1);
     }
 }
 
