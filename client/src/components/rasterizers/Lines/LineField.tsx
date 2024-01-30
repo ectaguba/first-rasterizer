@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Line } from '../Line.tsx';
 
 interface LineFieldProps {
     lineIndex: number;
@@ -14,6 +13,7 @@ interface LineFieldProps {
         color: number[];
         updatedAt: string;
     };
+    // modelArr??
     // handleChangeLine: (
     //     index: number,
     //     point: 0 | 1,
@@ -24,6 +24,8 @@ interface LineFieldProps {
 
 const LineField: React.FC<LineFieldProps> = ({ lineIndex, line }) => {
 
+    const [lineState, setLineState] = useState(line);
+    
     const rgbToHex = (rgb: number[]): string => {
         // Ensure the RGB array has three values
         if (rgb.length !== 3) {

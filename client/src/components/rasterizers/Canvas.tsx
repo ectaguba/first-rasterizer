@@ -5,7 +5,7 @@ import { Line } from "./Line.tsx"
 import { Triangle } from "./Triangle.tsx"
 
 // Union type for different shapes
-type Model = Line | Triangle;
+type Model = Line;
 
 interface CanvasProps {
     width: number;
@@ -211,11 +211,11 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, modelArr }) => {
 
         for (let i = 0; i < modelArr.length; i++) {
             const shape = modelArr[i];
-            if (shape instanceof Line) {
-                drawLine(shape.p0, shape.p1, shape.color);
-            } else if (shape instanceof Triangle) {
-                drawWireframeTriangle(shape.p0, shape.p1, shape.p2, [0, 0, 0]);
-                drawFilledTriangle(shape.p0, shape.p1, shape.p2, [0, 255, 0]);
+            if (shape.type === "line") {
+                drawLine(shape.vertices[0], shape.vertices[1], shape.color);
+            } else if (shape.type === "triangle") {
+                drawWireframeTriangle(shape.vertices[0], shape.vertices[1], shape.vertices[2], [0, 0, 0]);
+                drawFilledTriangle(shape.vertices[0], shape.vertices[1], shape.vertices[2], [0, 255, 0]);
             }
         }
 
