@@ -6,9 +6,14 @@ export class Line {
     private _p1: Pixel;
     private _color: number[];
 
-    constructor(p0: Pixel, p1: Pixel) {
+    constructor(
+        p0: Pixel = new Pixel(0, 0), 
+        p1: Pixel = new Pixel(100, 100), 
+        color: number[] = [128, 128, 128]
+    ) {
         this._p0 = p0;
         this._p1 = p1;
+        this._color = color;
     }
 
     get p0(): Pixel {
@@ -56,11 +61,13 @@ export class Line {
     }
 
     updatePoint(
-        point: number, 
+        point: 0 | 1, 
         property: 'x' | 'y' | 'h' | 'color', 
         value: string | number
     ): void {
-        if (property === 'x') {
+        if (property === 'color') {
+            this._color = this._hexToRGB(value as string)
+        } else if (property === 'x') {
             if (point === 0) {
                 this._p0.x = Number(value);
             } else {
@@ -72,8 +79,6 @@ export class Line {
             } else {
                 this._p1.y = Number(value);
             }
-        } else if (property === 'color') {
-            this._color = this._hexToRGB(value as string);
         } else if (property === 'h') {
             if (point === 0) {
                 this._p0.h = Number(value);

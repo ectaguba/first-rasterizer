@@ -13,22 +13,22 @@ const LineRasterizer: React.FC = () => {
     // lines should draw a triangle
     const [lineArr, setLineArr] = useState<Line[]>([
         new Line(
-            new Pixel(0, 120), 
-            new Pixel(-160, -120)
+            new Pixel(0, 120, 1), 
+            new Pixel(-160, -120, 0)
         ),
         new Line(
-            new Pixel(-160, -120), 
-            new Pixel(160, -120)
+            new Pixel(-160, -120, 0), 
+            new Pixel(160, -120, 0.5)
         ),
         new Line(
-            new Pixel(160, -120), 
-            new Pixel(0, 120)
+            new Pixel(160, -120, 0.5), 
+            new Pixel(0, 120, 1)
         )
     ]);
 
     const handleChangeLine = (
         index: number, 
-        point: number, 
+        point: 0 | 1, 
         property: 'x' | 'y' | 'h' | 'color', 
         value: string | number
     ): void => {

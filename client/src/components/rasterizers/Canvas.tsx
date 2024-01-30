@@ -91,30 +91,42 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, modelArr }) => {
                 // if (p0.x > p1.x) [p0.x, p1.x] = [p1.x, p0.x];
 
                 // horizontal-ish line, swap to make line left to right
-                const startPixel = p0.x > p1.x ? p1 : p0;
-                const endPixel = p0.x > p1.x ? p0 : p1;
+                const startP = p0.x > p1.x ? p1 : p0;
+                const endP = p0.x > p1.x ? p0 : p1;
 
-                // obtain and draw y values at each x
-                const ys: number[] = interpolate(startPixel.x, startPixel.y, endPixel.x, endPixel.y);
+                // for each x, obtain y and h values 
+                const ys: number[] = interpolate(startP.x, startP.y, endP.x, endP.y);
+                const hs: number[] = interpolate(startP.x, startP.h, endP.x, endP.h);
 
-                for (let x = startPixel.x; x <= endPixel.x; x++) {
-                    const interpolatedY = ys[x - startPixel.x | 0];
-                    putPixel(x, interpolatedY, color);
+                for (let x = startP.x; x <= endP.x; x++) {
+                    const interpolatedY = ys[x - startP.x | 0];
+                    let shadedColor: number[] = [
+                        color[0] * hs[x - startP.x],
+                        color[1] * hs[x - startP.x],
+                        color[2] * hs[x - startP.x]
+                    ]
+                    putPixel(x, interpolatedY, shadedColor);
                 }
             } else {
                 // BUGGED: pass-by-reference switches objects outside the function
                 // if (p0.y > p1.y) [p0.y, p1.y] = [p1.y, p0.y];
 
                 // vertical-ish line, swap to make line bottom to top
-                const startPixel = p0.y > p1.y ? p1 : p0;
-                const endPixel = p0.y > p1.y ? p0 : p1;
+                const startP = p0.y > p1.y ? p1 : p0;
+                const endP = p0.y > p1.y ? p0 : p1;
 
-                // obtain and draw x values for each y
-                const xs: number[] = interpolate(startPixel.y, startPixel.x, endPixel.y, endPixel.x);
+                // for each y, obtain x and h values 
+                const xs: number[] = interpolate(startP.y, startP.x, endP.y, endP.x);
+                const hs: number[] = interpolate(startP.y, startP.h, endP.y, endP.h);
 
-                for (let y = startPixel.y; y <= endPixel.y; y++) {
-                    const interpolatedX = xs[y - startPixel.y | 0];
-                    putPixel(interpolatedX, y, color);
+                for (let y = startP.y; y <= endP.y; y++) {
+                    const interpolatedX = xs[y - startP.y | 0];
+                    let shadedColor: number[] = [
+                        color[0] * hs[y - startP.y],
+                        color[1] * hs[y - startP.y],
+                        color[2] * hs[y - startP.y]
+                    ]
+                    putPixel(interpolatedX, y, shadedColor);
                 }
             }
         };
@@ -200,7 +212,7 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, modelArr }) => {
         for (let i = 0; i < modelArr.length; i++) {
             const shape = modelArr[i];
             if (shape instanceof Line) {
-                drawLine(shape.p0, shape.p1, [0, 0, 0]);
+                drawLine(shape.p0, shape.p1, shape.color);
             } else if (shape instanceof Triangle) {
                 drawWireframeTriangle(shape.p0, shape.p1, shape.p2, [0, 0, 0]);
                 drawFilledTriangle(shape.p0, shape.p1, shape.p2, [0, 255, 0]);
