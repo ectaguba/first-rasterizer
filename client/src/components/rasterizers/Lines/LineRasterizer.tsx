@@ -27,19 +27,19 @@ const LineRasterizer: React.FC = () => {
     //     )
     // ]);
     
-    let lineJSON = {};
     const [lineArr, setLineArr] = useState({});
 
     useEffect(() => {
         axios
             .get("http://localhost:8082/api/canvasElements")
             .then((res) => {
-                console.log(res.data);
+                setLineArr(res.data);
             })
             .catch((err) => {
                 console.log("Error from LineRasterizer");
             })
     }, [])
+
 
     // const handleChangeLine = (
     //     index: number, 
@@ -94,7 +94,7 @@ const LineRasterizer: React.FC = () => {
     return (
         <div>
             <p>Line rasterizer:</p>
-            {JSON.stringify(lineJSON)}
+            {JSON.stringify(lineArr)}
         </div>
     )
 };
