@@ -3,24 +3,26 @@ import { Line } from '../Line.tsx';
 
 interface LineFieldProps {
     lineIndex: number;
-    line: Line;
-    handleChangeLine: (
-        index: number,
-        point: 0 | 1,
-        property: 'x' | 'y' | 'h' | 'color',
-        value: string | number
-    ) => void;
+    line: {
+        _id: string;
+        type: string;
+        vertices: {
+          x: number;
+          y: number;
+          h: number;
+        }[];
+        color: number[];
+        updatedAt: string;
+    };
+    // handleChangeLine: (
+    //     index: number,
+    //     point: 0 | 1,
+    //     property: 'x' | 'y' | 'h' | 'color',
+    //     value: string | number
+    // ) => void;
 }
 
-const LineField: React.FC<LineFieldProps> = ({ lineIndex, line, handleChangeLine }) => {
-
-    const handleChange = (
-        point: 0 | 1,
-        property: 'x' | 'y' | 'h' | 'color',
-        value: string | number
-    ): void => {
-        handleChangeLine(lineIndex, point, property, value);
-    };
+const LineField: React.FC<LineFieldProps> = ({ lineIndex, line }) => {
 
     const rgbToHex = (rgb: number[]): string => {
         // Ensure the RGB array has three values
@@ -49,33 +51,24 @@ const LineField: React.FC<LineFieldProps> = ({ lineIndex, line, handleChangeLine
                     x0:
                     <input
                         type="text"
-                        value={line.p0.x}
-                        onChange={(e) =>
-                            handleChange(0, 'x', e.target.value)
-                        }
+                        value={line.vertices[0].x}
                     />
                 </label>
                 <label>
                     y0:
                     <input
                         type="text"
-                        value={line.p0.y}
-                        onChange={(e) =>
-                            handleChange(0, 'y', e.target.value)
-                        }
+                        value={line.vertices[0].y}
                     />
                 </label>
                 <label>
                     h0:
                     <input
                         type="number"
-                        value={line.p0.h}
+                        value={line.vertices[0].h}
                         min="0.0"
                         max="1.0"
                         step="0.1"
-                        onChange={(e) => 
-                            handleChange(0, 'h', e.target.value)
-                        }
                     />
                 </label>
             </div>
@@ -85,33 +78,24 @@ const LineField: React.FC<LineFieldProps> = ({ lineIndex, line, handleChangeLine
                     x1:
                     <input
                         type="text"
-                        value={line.p1.x}
-                        onChange={(e) =>
-                            handleChange(1, 'x', e.target.value)
-                        }
+                        value={line.vertices[1].x}
                     />
                 </label>
                 <label>
                     y1:
                     <input
                         type="text"
-                        value={line.p1.y}
-                        onChange={(e) =>
-                            handleChange(1, 'y', e.target.value)
-                        }
+                        value={line.vertices[1].y}
                     />
                 </label>
                 <label>
                     h1:
                     <input
                         type="number"
-                        value={line.p1.h}
+                        value={line.vertices[1].h}
                         min="0.0"
                         max="1.0"
                         step="0.1"
-                        onChange={(e) => 
-                            handleChange(1, 'h', e.target.value)
-                        }
                     />
                 </label>
             </div>
@@ -121,7 +105,7 @@ const LineField: React.FC<LineFieldProps> = ({ lineIndex, line, handleChangeLine
                     type="color"
                     value={rgbToHex(line.color)}
                     onChange={(e) => {
-                        handleChange(0, 'color', e.target.value);
+                        
                     }}
                 />
             </div>

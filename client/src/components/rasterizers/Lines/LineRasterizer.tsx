@@ -91,10 +91,26 @@ const LineRasterizer: React.FC = () => {
     //         </div>
     //     </div>
     // );
+    
     return (
         <div>
-            <p>Line rasterizer:</p>
-            {JSON.stringify(lineArr)}
+             <div className="LineFieldContainer">
+                {Object.keys(lineArr).map((key, index) => {
+                    return (
+                        <LineField 
+                            key={index}
+                            lineIndex={index}
+                            line={lineArr[key]}
+                        />
+                    )
+                })}
+                <button 
+                    className="AddLineBtn"
+                    type="button" 
+                >
+                    Add Line
+                </button>
+            </div>
         </div>
     )
 };

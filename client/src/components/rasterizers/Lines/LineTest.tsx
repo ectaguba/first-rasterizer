@@ -21,25 +21,22 @@ const LineTest = () => {
     
     const handleChangeLine = (
         index: number, 
-        point: number, 
+        point: 0 | 1, 
         property: 'x' | 'y' | 'color' | 'h', 
         value: number
     ): void => {
-        setLineArr((prevLineArr) => {
-            const updatedLines = prevLineArr.map((line, i) => {
-                // i === index ? line.updatePoint(point, axis, value) : line
-                if (i === index) {
-                    return line.updatePoint(point, property, value);
-                } else {
-                    return line;
-                }
-            });
-            return updatedLines;
+        const updatedLines = [...lineArr];
+        updatedLines.map((line, i) => {
+            // i === index ? line.updatePoint(point, axis, value) : line
+            if (i === index) {
+                line.updatePoint(point, property, value);
+            }
         });
+        setLineArr(updatedLines);
     };
     
     const handleCoordinateChange = (
-        point: number, 
+        point: 0 | 1, 
         property: 'x' | 'y' | 'color' | 'h', value: number
     ): void => {
         handleChangeLine(2, point, property, value);
