@@ -18,25 +18,7 @@ const pixelSchema = new Schema({
         type: Number, 
         default: 1 
     },
-});
-
-const colorSchema = new Schema({
-    r: {
-        type: Number,
-        required: true,
-        default: 128
-    },
-    g: { 
-        type: Number, 
-        required: true, 
-        default: 128 
-    },
-    b: { 
-        type: Number, 
-        required: true,
-        default: 128 
-    },
-});
+}, { _id: false}); // don't id sub docs
 
 const canvasElementSchema = new mongoose.Schema({
     type: { 
@@ -49,9 +31,9 @@ const canvasElementSchema = new mongoose.Schema({
         required: true,
     },
     color: {
-        type: [colorSchema],
+        type: [Number],
         required: true,
-        default: [0, 255, 0] // green
+        default: [0, 255, 0],
     },
     createdAt: { 
         type: Date, 
