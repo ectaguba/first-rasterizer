@@ -36,10 +36,10 @@ const canvasElementSchema = new mongoose.Schema({
         default: [0, 255, 0],
     },
     createdAt: { 
-        type: Date, 
+        type: Number, 
     },
     updatedAt: {
-        type: Date,
+        type: Number,
         default: Date.now
     }
 });
