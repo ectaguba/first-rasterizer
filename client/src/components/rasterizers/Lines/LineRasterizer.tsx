@@ -1,21 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
 import Canvas from "../Canvas.tsx";
+import { Line } from "../Line.tsx"
 import LineField from "./LineField.tsx";
 
 import axios from "axios";
-
-interface Line {
-    _id: string;
-    type: 'line';
-    vertices: {
-      x: number;
-      y: number;
-      h: number;
-    }[];
-    color: number[];
-    updatedAt: string;
-}
 
 const LineRasterizer: React.FC = () => {
 
@@ -23,21 +12,65 @@ const LineRasterizer: React.FC = () => {
 
     const [lineArr, setLineArr] = useState<Line[]>([]);
 
-    // run after every re-render
-    useEffect(() => {
+    const fetchLines = () => {
         axios
             .get("http://localhost:8082/api/canvasElements")
             .then((res) => {
+                console.log(res.data)
                 setLineArr(res.data);
             })
             .catch((err) => {
                 console.log("Error from LineRasterizer");
             })
+    }
+
+    // save to DB
+    const handleSaveLines = async () => {
+        // update or add lines based on if id exists
+        await Promise.all(lineArr.map(async (line) => {
+            if (line._id) {
+                // Update existing line
+                await axios.put(`http://localhost:8082/api/canvasElements/${line._id}`, line);
+            } else {
+                // Add new line
+                await axios.post("http://localhost:8082/api/canvasElements", line);
+            }
+        }));
+
+        // fetch latest changes and save into state
+        fetchLines();
+        console.log("Saved all lines to DB");
+    };
+
+    const handleAddLine = (): void => {
+        const newLine: Line = {
+            type: 'line',
+            vertices: [
+                {x: 0, y: 0, h: 1},
+                {x: 0, y: 0, h: 1}
+            ],
+            color: [0, 255, 0],
+            createdAt: Date.now()
+        }
+
+        axios
+            .post("http://localhost:8082/api/canvasElements", newLine)
+            .then((res) => {
+                setLineArr([...lineArr, res.data]);
+            })
+            .catch((err) => {
+                console.log("Error from LineRasterizer");
+                return;
+            })
+
+        setLineArr([...lineArr, newLine]);
+        console.log("Added new line to DB");
+    }
+
+    // run after every re-render
+    useEffect(() => {
+        fetchLines()
     }, [])
-
-    // TO-DO: update handleChangeLine
-
-    // TO-DO: update handleAddLine
     
     return (
         <div>
@@ -49,20 +82,32 @@ const LineRasterizer: React.FC = () => {
                 />
             </div>
              <div className="LineFieldContainer">
-                {Object.keys(lineArr).map((key, index) => {
-                    return (
-                        <LineField 
-                            key={index}
-                            lineIndex={index}
-                            line={lineArr[key]}
-                        />
-                    )
-                })}
+                    {Object.keys(lineArr).map((key, index) => {
+                        return (
+                            <LineField 
+                                key={lineArr[key]._id}
+                                lineIndex={index}
+                                line={lineArr[key]}
+                            />
+                        );
+                    })}
                 <button 
                     className="AddLineBtn"
                     type="button" 
+                    onClick={handleAddLine}
                 >
                     Add Line
+                </button>
+                <button 
+                    style={{
+                        backgroundColor: "darkgreen",
+                        color: "white"
+                    }}
+                    className="AddLineBtn"
+                    type="button" 
+                    onClick={handleSaveLines}
+                >
+                    Save Lines
                 </button>
             </div>
         </div>
