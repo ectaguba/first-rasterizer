@@ -57,12 +57,60 @@ code {
   width: 2rem;
 }
 
-.AddLineBtn {
-  background-color: white;
+.LineFieldBtns {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
 
+.LineFieldBtns > button {
   padding: 0.5rem 1rem;
-  margin-bottom: 0.5rem;
   border: 1px solid black;
   border-radius: 5px;
-  
+  margin-bottom: 0.5rem;
+  font-weight: bolder;
+
+  transition: 0.25s;
+}
+
+.LineFieldBtns > button:hover {
+  transform: scale(1.1);
+}
+
+.AddLineBtn {
+  background-color: white;
+  transition: 0.25s;
+}
+
+.AddLineBtn:hover {
+  background-color: lightgray;
+}
+
+.SaveLineBtn {
+  background-color: darkgreen;
+  color: white;
+}
+
+.SaveLineBtn:hover {
+  background-color: green;
+}
+
+.DeleteLineBtn {
+  background-color: darkred;
+  color: white;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  font-weight: bolder;
+
+  transition: 0.25s;
+}
+
+.DeleteLineBtn:hover {
+  transform: scale(1.1);
+  background-color: red;
+  color: black;
 }

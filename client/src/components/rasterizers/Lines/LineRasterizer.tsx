@@ -53,7 +53,7 @@ const LineRasterizer: React.FC = () => {
                 console.error("Error fetching lines:", error);
             } finally {
                 setLoading(false);
-            }
+            }       
         };
 
         fetchLines();
@@ -64,14 +64,8 @@ const LineRasterizer: React.FC = () => {
         try {
             setLoading(true);
             await Promise.all(lineArr.map(async (line: Line) => {
-                if (line._id) {
-                    // update existing line
-                    await axios.put(`http://localhost:8082/api/canvasElements/${line._id}`, line);
-                } else {
-                    // add new line
-                    const res = await axios.post("http://localhost:8082/api/canvasElements", line);
-                    setLineArr([lineArr, res.data]);
-                }
+                // sync lineArr client state w/ lines in DB
+                await axios.put(`http://localhost:8082/api/canvasElements/${line._id}`, line);
             }));
             console.log("Saved all lines to DB");
         } catch (error) {
@@ -156,14 +150,6 @@ const LineRasterizer: React.FC = () => {
         setLineArr(updatedLines);
     };
 
-    if (loading) {
-        return (
-            <div style={{ textAlign: "center" }}>
-                <h1>Loading...</h1>
-            </div>
-        );
-    }
-
     return (
         <div>
             <div className="CanvasContainer">
@@ -174,36 +160,37 @@ const LineRasterizer: React.FC = () => {
                 />
             </div>
             <div className="LineFieldContainer">
-                {Object.keys(lineArr).map((key, index) => {
-                    return (
-                        <LineField
-                            key={lineArr[key]._id}
-                            lineId={lineArr[key]._id}
-                            lineNum={index}
-                            line={lineArr[key]}
-                            handleChangeLineArr={handleChangeLineArr}
-                            handleDeleteLine={handleDeleteLine}
-                        />
-                    );
-                })}
-                <button
-                    className="AddLineBtn"
-                    type="button"
-                    onClick={handleAddLine}
-                >
-                    Add Line
-                </button>
-                <button
-                    style={{
-                        backgroundColor: "darkgreen",
-                        color: "white"
-                    }}
-                    className="AddLineBtn"
-                    type="button"
-                    onClick={handleSaveLines}
-                >
-                    Save Lines
-                </button>
+                <div>
+                    {Object.keys(lineArr).map((key, index) => {
+                        return (
+                            <LineField
+                                key={lineArr[key]._id}
+                                lineId={lineArr[key]._id}
+                                lineNum={index}
+                                line={lineArr[key]}
+                                loading={loading}
+                                handleChangeLineArr={handleChangeLineArr}
+                                handleDeleteLine={handleDeleteLine}
+                            />
+                        );
+                    })}
+                </div>
+                <div className="LineFieldBtns">
+                    <button
+                        className="AddLineBtn"
+                        type="button"
+                        onClick={handleAddLine}
+                    >
+                        Add Line
+                    </button>
+                    <button
+                        className="SaveLineBtn"
+                        type="button"
+                        onClick={handleSaveLines}
+                    >
+                        Save Lines
+                    </button>
+                </div>
             </div>
         </div>
     )

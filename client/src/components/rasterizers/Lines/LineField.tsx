@@ -6,6 +6,7 @@ interface LineFieldProps {
     lineId: string;
     lineNum: number;
     line: Line;
+    loading: boolean;
     handleChangeLineArr: (
         lineId: string,
         property: 'x' | 'y' | 'h' | 'color',
@@ -19,6 +20,7 @@ const LineField: React.FC<LineFieldProps> = ({
     lineId, 
     lineNum, 
     line, 
+    loading,
     handleChangeLineArr,
     handleDeleteLine
 }) => {
@@ -49,6 +51,7 @@ const LineField: React.FC<LineFieldProps> = ({
 
     return (
         <form className="LineField">
+
             <div className="LineFieldHeader">
                 <h3>Line {lineNum}</h3>
             </div>
@@ -135,17 +138,12 @@ const LineField: React.FC<LineFieldProps> = ({
                 />
             </div>
             <button
-                style={{
-                    backgroundColor: "darkred",
-                    color: "white",
-                    border: "1px solid black",
-                    borderRadius: "5px",
-                    padding: "0.5rem 1rem"
-                }}
+                className="DeleteLineBtn"
                 onClick={() => handleDeleteLine(lineId)}
             >
                 Delete
             </button>
+
         </form>
     );
 };
