@@ -12,6 +12,7 @@ const LineRasterizer: React.FC = () => {
 
     const [lineArr, setLineArr] = useState<Line[]>([]);
 
+    // GET
     const fetchLines = () => {
         axios
             .get("http://localhost:8082/api/canvasElements")
@@ -24,10 +25,10 @@ const LineRasterizer: React.FC = () => {
             })
     }
 
-    // save to DB
+    // PUT (save) to DB
     const handleSaveLines = async () => {
         // update or add lines based on if id exists
-        await Promise.all(lineArr.map(async (line) => {
+        await Promise.all(lineArr.map(async (line: Line) => {
             if (line._id) {
                 // Update existing line
                 await axios.put(`http://localhost:8082/api/canvasElements/${line._id}`, line);
@@ -42,6 +43,7 @@ const LineRasterizer: React.FC = () => {
         console.log("Saved all lines to DB");
     };
 
+    // POST (add) to DB
     const handleAddLine = (): void => {
         const newLine: Line = {
             type: 'line',
@@ -67,6 +69,65 @@ const LineRasterizer: React.FC = () => {
         console.log("Added new line to DB");
     }
 
+    const hexToRGB = (hex: string): number[] =>  {
+        // Remove the hash if it's present
+        hex = hex.replace(/^#/, '');
+    
+        // Ensure the hex code is valid
+        const validHex = /^[0-9A-F]{6}$/i.test(hex);
+        if (!validHex) {
+            console.error('Invalid hex color code');
+            return [0, 0, 0];
+        }
+    
+        // Parse the hex code into RGB values
+        const bigint = parseInt(hex, 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+    
+        return [r, g, b];
+    }
+
+    
+    const updateColor = (line: Line, value: string): void => {
+        line.color = hexToRGB(value);
+    };
+    
+    const updateCoordinate = (
+        line: Line, 
+        property: 'x' | 'y' | 'h', 
+        point: 0 | 1, 
+        value: string | number
+    ): void => {
+        const vertex = line.vertices[point];
+        if (property === 'x') vertex.x = Number(value);
+        else if (property === 'y') vertex.y = Number(value);
+        else if (property === 'h') vertex.h = Number(value);
+    };
+    
+    const handleChangeLineArr = (
+        key: string, 
+        property: 'x' | 'y' | 'h' | 'color',
+        point: 0 | 1, 
+        value: string | number
+    ): void => {
+        const updatedLines: Line[] = [...lineArr];
+    
+        updatedLines.forEach((line) => {
+            // skip unmatched keys
+            if (line._id !== key) return;
+    
+            if (property === 'color') {
+                updateColor(line, value as string);
+            } else {
+                updateCoordinate(line, property, point, value);
+            }
+        });
+    
+        setLineArr(updatedLines);
+    };
+
     // run after every re-render
     useEffect(() => {
         fetchLines()
@@ -86,8 +147,10 @@ const LineRasterizer: React.FC = () => {
                         return (
                             <LineField 
                                 key={lineArr[key]._id}
-                                lineIndex={index}
+                                lineId={lineArr[key]._id}
+                                lineNum={index}
                                 line={lineArr[key]}
+                                handleChangeLineArr={handleChangeLineArr}
                             />
                         );
                     })}
