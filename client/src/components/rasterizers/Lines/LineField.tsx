@@ -1,31 +1,21 @@
 import React, { useState } from 'react';
 
+import { Line } from "../Line.tsx"
+
 interface LineFieldProps {
-    lineIndex: number;
-    line: {
-        _id: string;
-        type: string;
-        vertices: {
-          x: number;
-          y: number;
-          h: number;
-        }[];
-        color: number[];
-        updatedAt: string;
-    };
-    // modelArr??
-    // handleChangeLine: (
-    //     index: number,
-    //     point: 0 | 1,
-    //     property: 'x' | 'y' | 'h' | 'color',
-    //     value: string | number
-    // ) => void;
+    lineId: string;
+    lineNum: number;
+    line: Line;
+    handleChangeLineArr: (
+        lineId: string,
+        property: 'x' | 'y' | 'h' | 'color',
+        point: 0 | 1,
+        value: string | number
+    ) => void;
 }
 
-const LineField: React.FC<LineFieldProps> = ({ lineIndex, line }) => {
+const LineField: React.FC<LineFieldProps> = ({ lineId, lineNum, line, handleChangeLineArr}) => {
 
-    const [lineState, setLineState] = useState(line);
-    
     const rgbToHex = (rgb: number[]): string => {
         // Ensure the RGB array has three values
         if (rgb.length !== 3) {
@@ -42,10 +32,18 @@ const LineField: React.FC<LineFieldProps> = ({ lineIndex, line }) => {
         return '#' + hexComponents.join('');
     }
 
+    const handleChangeLine = (
+        property: 'x' | 'y' | 'h' | 'color',
+        point: 0 | 1,
+        value: string | number
+    ): void => {
+        handleChangeLineArr(lineId, property, point, value);
+    }
+
     return (
         <form className="LineField">
             <div className="LineFieldHeader">
-                <h3>Line {lineIndex}</h3>
+                <h3>Line {lineNum}</h3>
             </div>
 
             <div className="LineFieldPt">
@@ -54,6 +52,9 @@ const LineField: React.FC<LineFieldProps> = ({ lineIndex, line }) => {
                     <input
                         type="text"
                         value={line.vertices[0].x}
+                        onChange={(e) => {
+                            handleChangeLine('x', 0, e.target.value);
+                        }}
                     />
                 </label>
                 <label>
@@ -61,6 +62,9 @@ const LineField: React.FC<LineFieldProps> = ({ lineIndex, line }) => {
                     <input
                         type="text"
                         value={line.vertices[0].y}
+                        onChange={(e) => {
+                            handleChangeLine('y', 0, e.target.value);
+                        }}
                     />
                 </label>
                 <label>
@@ -71,6 +75,9 @@ const LineField: React.FC<LineFieldProps> = ({ lineIndex, line }) => {
                         min="0.0"
                         max="1.0"
                         step="0.1"
+                        onChange={(e) => {
+                            handleChangeLine('h', 0, e.target.value);
+                        }}
                     />
                 </label>
             </div>
@@ -81,6 +88,9 @@ const LineField: React.FC<LineFieldProps> = ({ lineIndex, line }) => {
                     <input
                         type="text"
                         value={line.vertices[1].x}
+                        onChange={(e) => {
+                            handleChangeLine('x', 1, e.target.value);
+                        }}
                     />
                 </label>
                 <label>
@@ -88,6 +98,9 @@ const LineField: React.FC<LineFieldProps> = ({ lineIndex, line }) => {
                     <input
                         type="text"
                         value={line.vertices[1].y}
+                        onChange={(e) => {
+                            handleChangeLine('y', 1, e.target.value);
+                        }}
                     />
                 </label>
                 <label>
@@ -98,6 +111,9 @@ const LineField: React.FC<LineFieldProps> = ({ lineIndex, line }) => {
                         min="0.0"
                         max="1.0"
                         step="0.1"
+                        onChange={(e) => {
+                            handleChangeLine('h', 1, e.target.value);
+                        }}
                     />
                 </label>
             </div>
@@ -107,7 +123,7 @@ const LineField: React.FC<LineFieldProps> = ({ lineIndex, line }) => {
                     type="color"
                     value={rgbToHex(line.color)}
                     onChange={(e) => {
-                        
+                        handleChangeLine('color', 0, e.target.value);
                     }}
                 />
             </div>
