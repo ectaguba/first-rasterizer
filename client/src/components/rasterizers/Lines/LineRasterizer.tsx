@@ -17,7 +17,6 @@ const LineRasterizer: React.FC = () => {
         axios
             .get("http://localhost:8082/api/canvasElements")
             .then((res) => {
-                console.log(res.data)
                 setLineArr(res.data);
             })
             .catch((err) => {
@@ -30,10 +29,10 @@ const LineRasterizer: React.FC = () => {
         // update or add lines based on if id exists
         await Promise.all(lineArr.map(async (line: Line) => {
             if (line._id) {
-                // Update existing line
+                // update existing line
                 await axios.put(`http://localhost:8082/api/canvasElements/${line._id}`, line);
             } else {
-                // Add new line
+                // add new line
                 await axios.post("http://localhost:8082/api/canvasElements", line);
             }
         }));
@@ -52,7 +51,8 @@ const LineRasterizer: React.FC = () => {
                 {x: 0, y: 0, h: 1}
             ],
             color: [0, 255, 0],
-            createdAt: Date.now()
+            createdAt: Date.now(),
+            updatedAt: Date.now()
         }
 
         axios
@@ -62,11 +62,20 @@ const LineRasterizer: React.FC = () => {
             })
             .catch((err) => {
                 console.log("Error from LineRasterizer");
-                return;
-            })
+            });
+    }
 
-        setLineArr([...lineArr, newLine]);
-        console.log("Added new line to DB");
+    // DELETE from DB
+    const handleDeleteLine = (targetId: string): void => {
+        axios
+            .delete(`http://localhost:8082/api/canvasElements/${targetId}`)
+            .then((res) => {
+                setLineArr(lineArr.filter((line) => line._id !== targetId));
+            })
+            .catch((err) => {
+                console.log("Error in handleDeleteLine");
+                return;
+            });
     }
 
     const hexToRGB = (hex: string): number[] =>  {
@@ -151,6 +160,7 @@ const LineRasterizer: React.FC = () => {
                                 lineNum={index}
                                 line={lineArr[key]}
                                 handleChangeLineArr={handleChangeLineArr}
+                                handleDeleteLine={handleDeleteLine} 
                             />
                         );
                     })}

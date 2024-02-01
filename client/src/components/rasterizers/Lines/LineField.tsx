@@ -12,9 +12,21 @@ interface LineFieldProps {
         point: 0 | 1,
         value: string | number
     ) => void;
+    handleDeleteLine: (id: string) => void;
 }
 
-const LineField: React.FC<LineFieldProps> = ({ lineId, lineNum, line, handleChangeLineArr}) => {
+const LineField: React.FC<LineFieldProps> = ({ 
+    lineId, 
+    lineNum, 
+    line, 
+    handleChangeLineArr,
+    handleDeleteLine
+}) => {
+
+    if (!line) {
+        // undefined while line is being fetched
+        return <div>Loading...</div>;
+    }
 
     const rgbToHex = (rgb: number[]): string => {
         // Ensure the RGB array has three values
@@ -127,6 +139,18 @@ const LineField: React.FC<LineFieldProps> = ({ lineId, lineNum, line, handleChan
                     }}
                 />
             </div>
+            <button
+                style={{
+                    backgroundColor: "darkred",
+                    color: "white",
+                    border: "1px solid black",
+                    borderRadius: "5px",
+                    padding: "0.5rem 1rem"
+                }}
+                onClick={() => handleDeleteLine(lineId)}
+            >
+                Delete
+            </button>
         </form>
     );
 };
