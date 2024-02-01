@@ -23,11 +23,6 @@ const LineField: React.FC<LineFieldProps> = ({
     handleDeleteLine
 }) => {
 
-    if (!line) {
-        // undefined while line is being fetched
-        return <div>Loading...</div>;
-    }
-
     const rgbToHex = (rgb: number[]): string => {
         // Ensure the RGB array has three values
         if (rgb.length !== 3) {
