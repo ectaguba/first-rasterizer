@@ -5,7 +5,7 @@ import { Line } from "./Line.tsx"
 import { Triangle } from "./Triangle.tsx"
 
 // Union type for different shapes
-type Model = Line;
+type Model = Line | Triangle;
 
 interface CanvasProps {
     width: number;

@@ -1,5 +1,5 @@
 export interface Line {
-    _id: string;
+    _id?: string;
     type: 'line';
     // array of Pixel interfaces
     vertices: {
@@ -8,5 +8,6 @@ export interface Line {
       h: number;
     }[];
     color: number[];
-    updatedAt: string;
+    createdAt: number
+    updatedAt?: number;
 }
